@@ -31,9 +31,15 @@ type TXInput struct {
 	ScriptSig string
 }
 
+//IsCoinbase checks whether the transaction is coinbase
+func (tx Transaction) IsCoinbase() bool {
+	return len(tx.Vin) == 1 && len(tx.Vin[0].Txid) == 0 && tx.Vin[0].Vout == -1
+}
+
+// NewCoinbaseTX creates a new coinbase transaction
 func NewCoinBaseTX(to, data string) *Transaction {
 	if data == "" {
-		fmt.Sprintf("Reward to '%s'", to)
+		data = fmt.Sprintf("Reward to '%s'", to)
 	}
 	//initial coinbase trans, - empty txid, no value ie -1 and data is just string
 	txin := TXInput{[]byte{}, -1, data}
@@ -67,52 +73,39 @@ func (out *TXOutput) CanBeUnlockedWith(unlockingData string) bool {
 	return out.ScriptPubKey == unlockingData
 }
 
-func (bc *Blockchain) FindUnspentTransactions(address string) []Transaction {
+func NewUTXOTransaction(from, to string, amount int, bc *Blockchain) *Transaction {
 
-	var unspentTXs []Transaction
-	spentTXOs := make(map[string][]int)
-	bci := bc.Iterator()
+	var inputs []TXInput
+	var outputs []TXOutput
 
-	for {
-		block := bci.Next()
+	acc, validOutputs := bc.FindSpendableOutputs(from, amount)
 
-		for _, tx := range block.Transactions {
-			txID := hex.EncodeToString(tx.ID)
+	if acc < amount {
+		log.Fatal("ERROR: Not enough funds")
 
-		Outputs:
-			for outIdx, out := range tx.Vout {
-				//Was the output spent ?
-				//check if output referneced in an input
-				if spentTXOs[txID] != nil {
-					for _, spentOut := range spentTXOs[txID] {
-						if spentOut == outIdx {
-							continue Outputs
-						}
-					}
-				}
-				//get outputs that can be unlocked with the address and append to unspent
-				if out.CanBeUnlockedWith(address) {
-					unspentTXs = append(unspentTXs, *tx)
-				}
-			}
-			if tx.IsCoinbase() == false {
-				for _, in := range tx.Vin {
-					if in.CanUnlockOutputWith(address) {
-						inTxID := hex.EncodeToString(in.Txid)
-						spentTXOs[inTxID] = append(spentTXOs[inTxID], in.Vout)
-					}
-				}
-			}
-
-		}
-
-		if len(block.PrevBlockHash) == 0 {
-			break
-		}
-
-		//The function returns a list of transactions containing unspent outputs.
 	}
 
-	return unspentTXs
+	//build list of inputs
+	for txid, outs := range validOutputs {
+		txID, err := hex.DecodeString(txid)
+		if err != nil {
+			log.Panic(err)
+		}
 
+		for _, out := range outs {
+			input := TXInput{txID, out, from}
+			inputs = append(inputs, input)
+		}
+	}
+
+	//build a list of outputs
+	outputs = append(outputs, TXOutput{amount, to})
+	if acc > amount {
+		outputs = append(outputs, TXOutput{acc - amount, from})
+	}
+
+	tx := Transaction{nil, inputs, outputs}
+	tx.SetID()
+
+	return &tx
 }
