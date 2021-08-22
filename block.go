@@ -2,11 +2,13 @@ package main
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"encoding/gob"
 	"log"
 	"time"
 )
 
+// Block represents a block in the blockchain
 type Block struct {
 	Timestamp     int64
 	Transactions  []*Transaction
@@ -63,4 +65,18 @@ func NewBlock(transactions []*Transaction, prevBlockHash []byte) *Block {
 }
 func NewGenesisBlock(coinbase *Transaction) *Block {
 	return NewBlock([]*Transaction{coinbase}, []byte{})
+}
+
+// HashTransactions returns a hash of the transactions in the block
+func (b *Block) HashTransactions() []byte {
+	var txHashes [][]byte
+	var txHash [32]byte
+
+	for _, tx := range b.Transactions {
+		txHashes = append(txHashes, tx.ID)
+		txHashes = append(txHashes, tx.Hash())
+	}
+	txHash = sha256.Sum256(bytes.Join(txHashes, []byte{}))
+
+	return txHash[:]
 }

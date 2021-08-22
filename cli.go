@@ -18,11 +18,18 @@ func (cli *CLI) createBlockchain(address string) {
 }
 
 func (cli *CLI) getBalance(address string) {
+
+	if !ValidateAddress(address) {
+		log.Panic("ERROR: Address is not valid")
+	}
+
 	bc := NewBlockChain(address)
 	defer bc.db.Close()
 
 	balance := 0
-	UTXOs := bc.FindUTXO(address)
+	pubKeyHash := Base58Decode([]byte(address))
+	pubKeyHash = pubKeyHash[1 : len(pubKeyHash)-4]
+	UTXOs := bc.FindUTXO(pubKeyHash)
 
 	for _, out := range UTXOs {
 		balance += out.Value
@@ -39,6 +46,15 @@ func (cli *CLI) send(from, to string, amount int) {
 	tx := NewUTXOTransaction(from, to, amount, bc)
 	bc.MineBlock([]*Transaction{tx})
 	fmt.Println(("Success!"))
+}
+
+func (cli *CLI) createWallet() {
+	wallets, _ := NewWallets()
+	address := wallets.CreateWallet()
+	wallets.SaveToFile()
+
+	fmt.Printf("Your new address; %s\n", address)
+
 }
 
 func (cli *CLI) printChain() {
@@ -66,10 +82,11 @@ func (cli *CLI) printChain() {
 
 func (cli *CLI) printUsage() {
 	fmt.Println("Usage: ")
+	fmt.Println("  createwallet - Generates a new key-pair and saves it into the wallet file")
 	fmt.Println("  getbalance -address ADDRESS - Get balance of ADDRESS")
-	//fmt.Println(" addblock -data BLOCK_DATA - add a block to the blockchain.go")
-	fmt.Println(" printchain - print all the blocks of the blockchain.go")
-	fmt.Println(" createblockchain -address ADDRESS - Create a blockchain and send genesis block reward to ADDRESS")
+	fmt.Println("  listaddresses - Lists all addresses from the wallet file")
+	fmt.Println("  printchain - print all the blocks of the blockchain.go")
+	fmt.Println("  createblockchain -address ADDRESS - Create a blockchain and send genesis block reward to ADDRESS")
 	fmt.Println("  send -from FROM -to TO -amount AMOUNT - Send AMOUNT of coins from FROM address to TO")
 
 }
@@ -86,8 +103,9 @@ func (cli *CLI) Run() {
 	cli.validateArgs()
 	getBalanceCmd := flag.NewFlagSet("getbalance", flag.ExitOnError)
 	printChainCmd := flag.NewFlagSet("printchain", flag.ExitOnError)
+	createWalletCmd := flag.NewFlagSet("createwallet", flag.ExitOnError)
+	listAddressesCmd := flag.NewFlagSet("listaddresses", flag.ExitOnError)
 	sendCmd := flag.NewFlagSet("send", flag.ExitOnError)
-	//addBlockData := addBlockCmd.String("data", "", "Block data")
 	createBlockchainCmd := flag.NewFlagSet("createblockchain", flag.ExitOnError)
 
 	getBalanceAddress := getBalanceCmd.String("address", "", "The address to get balance for")
@@ -100,6 +118,16 @@ func (cli *CLI) Run() {
 
 	case "createblockchain":
 		err := createBlockchainCmd.Parse(os.Args[2:])
+		if err != nil {
+			log.Panic(err)
+		}
+	case "createwallet":
+		err := createWalletCmd.Parse(os.Args[2:])
+		if err != nil {
+			log.Panic(err)
+		}
+	case "listaddresses":
+		err := listAddressesCmd.Parse(os.Args[2:])
 		if err != nil {
 			log.Panic(err)
 		}
@@ -139,9 +167,15 @@ func (cli *CLI) Run() {
 		}
 		cli.createBlockchain(*createBlockchainAddress)
 	}
+	if listAddressesCmd.Parsed() {
+		cli.listAddresses()
+	}
 
 	if printChainCmd.Parsed() {
 		cli.printChain()
+	}
+	if createWalletCmd.Parsed() {
+		cli.createWallet()
 	}
 
 	if sendCmd.Parsed() {

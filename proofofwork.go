@@ -28,22 +28,6 @@ func NewProofOfWork(b *Block) *ProofOfWork {
 	return pow
 }
 
-func (b *Block) HashTransactions() []byte {
-
-	//get hashes of all transactions,
-	var txHashes [][]byte
-	var txHash [32]byte
-
-	for _, tx := range b.Transactions {
-		txHashes = append(txHashes, tx.ID)
-	}
-
-	//get hash of concatenaed hashes
-	txHash = sha256.Sum256(bytes.Join(txHashes, []byte{}))
-
-	return txHash[:]
-}
-
 // Run performs a proof-of-work
 func (pow *ProofOfWork) prepareData(nonce int) []byte {
 
