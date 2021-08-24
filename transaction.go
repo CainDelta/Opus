@@ -15,6 +15,7 @@ import (
 )
 
 const subsidy = 10
+const genesisSubsidy = 100000
 
 type Transaction struct {
 	ID   []byte
@@ -77,8 +78,9 @@ func (tx Transaction) IsCoinbase() bool {
 	return len(tx.Vin) == 1 && len(tx.Vin[0].Txid) == 0 && tx.Vin[0].Vout == -1
 }
 
+//CoinBaseTX doesnt require outputs, can create coins out of nothing by mining
 // NewCoinbaseTX creates a new coinbase transaction
-func NewCoinBaseTX(to, data string) *Transaction {
+func NewCoinbaseTX(to, data string) *Transaction {
 	if data == "" {
 		data = fmt.Sprintf("Reward to '%s'", to)
 	}
@@ -86,7 +88,37 @@ func NewCoinBaseTX(to, data string) *Transaction {
 	txin := TXInput{[]byte{}, -1, nil, []byte(data)}
 	txout := NewTXOutput(subsidy, to) //subsidy is the amount of reward, scriptkey is to address
 	tx := Transaction{nil, []TXInput{txin}, []TXOutput{*txout}}
-	tx.Hash()
+	tx.ID = tx.Hash()
+	return &tx
+}
+
+//func NewCoinbaseTX(to, data string) *Transaction {
+//	if data == "" {
+//		randData := make([]byte,20)
+//		_, err := rand.Read(randData)
+//		if err != nil {
+//			log.Panic(err)
+//		}
+//		data = fmt.Sprintf("%x", randData)
+//	}
+//	//initial coinbase trans, - empty txid, no value ie -1 and data is just string
+//	txin := TXInput{[]byte{}, -1, nil, []byte(data)}
+//	txout := NewTXOutput(subsidy, to) //subsidy is the amount of reward, scriptkey is to address
+//	tx := Transaction{nil, []TXInput{txin}, []TXOutput{*txout}}
+//	tx.ID = tx.Hash()
+//	return &tx
+//}
+
+//GenesisCoinBaseTX gives a much bigger reward to the person who creates the blockchain
+func GenesisCoinBaseTX(to, data string) *Transaction {
+	if data == "" {
+		data = fmt.Sprintf("Reward to '%s'", to)
+	}
+	//initial coinbase trans, - empty txid, no value ie -1 and data is just string
+	txin := TXInput{[]byte{}, -1, nil, []byte(data)}
+	txout := NewTXOutput(genesisSubsidy, to) //subsidy is the amount of reward, scriptkey is to address
+	tx := Transaction{nil, []TXInput{txin}, []TXOutput{*txout}}
+	tx.ID = tx.Hash()
 	return &tx
 }
 
@@ -115,7 +147,7 @@ func (tx *Transaction) SetID() {
 //}
 
 // NewUTXOTransaction creates a new transaction
-func NewUTXOTransaction(from, to string, amount int, bc *Blockchain) *Transaction {
+func NewUTXOTransaction(from, to string, amount int, UTXOSet *UTXOSet) *Transaction {
 
 	var inputs []TXInput
 	var outputs []TXOutput
@@ -128,7 +160,7 @@ func NewUTXOTransaction(from, to string, amount int, bc *Blockchain) *Transactio
 
 	wallet := wallets.GetWallet(from)
 	pubKeyHash := HashPubKey(wallet.PublicKey)
-	acc, validOutputs := bc.FindSpendableOutputs(pubKeyHash, amount)
+	acc, validOutputs := UTXOSet.FindSpendableOutputs(pubKeyHash, amount)
 
 	if acc < amount {
 		log.Fatal("ERROR: Not enough funds")
@@ -155,8 +187,8 @@ func NewUTXOTransaction(from, to string, amount int, bc *Blockchain) *Transactio
 	}
 
 	tx := Transaction{nil, inputs, outputs}
-	tx.Hash()
-	bc.SignTransaction(&tx, wallet.PrivateKey)
+	tx.ID = tx.Hash()
+	UTXOSet.Blockchain.SignTransaction(&tx, wallet.PrivateKey)
 	return &tx
 }
 
