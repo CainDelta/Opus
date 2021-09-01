@@ -1,0 +1,390 @@
+{
+  "sort": [],
+  "index": null,
+  "filter": {
+    "archived": {
+      "values": [
+        "Rejected by LexStep"
+      ],
+      "filterType": "set"
+    },
+    "jobStage": {
+      "values": [
+        "APPLIED",
+        "SHORTLISTED"
+      ],
+      "filterType": "set"
+    }
+  },
+  "columnState": [
+    {
+      "hide": false,
+      "colId": "0",
+      "width": 50,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "candidateName",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "qualificationDate",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "lawyerConsultant",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "sponsorship",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "candidateID",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "firmAppliedTo",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "selectivity",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "listingType",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "employerConsultant",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "jobTitle",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "PQE",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "jobLocations",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "jobPractices",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "jobContract",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "jobRole",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "jobReference",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "lexstepPositionID",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "applicantCount",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "jobType",
+      "width": 129,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "jobVisibility",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "uploadedAt",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "jobExpiry",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "applicationID",
+      "width": 139,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "note",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "applicationDate",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "submissionDate",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "firstInterview",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "secondInterview",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "offer",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "acceptanceDate",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "startDate",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "cvURL",
+      "width": 77,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "jobStage",
+      "width": 93,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": 0
+    },
+    {
+      "hide": false,
+      "colId": "jobState",
+      "width": 121,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": 1
+    },
+    {
+      "hide": false,
+      "colId": "lastStatusChange",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "archived",
+      "width": 97,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": 2
+    },
+    {
+      "hide": false,
+      "colId": "followers",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "feedBack",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "source",
+      "width": 100,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    },
+    {
+      "hide": false,
+      "colId": "showHistory",
+      "width": 200,
+      "pinned": null,
+      "aggFunc": null,
+      "pivotIndex": null,
+      "rowGroupIndex": null
+    }
+  ]
+}

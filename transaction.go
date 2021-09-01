@@ -14,7 +14,7 @@ import (
 	"strings"
 )
 
-const subsidy = 10
+const subsidy = 1
 const genesisSubsidy = 100000
 
 type Transaction struct {
@@ -92,23 +92,6 @@ func NewCoinbaseTX(to, data string) *Transaction {
 	return &tx
 }
 
-//func NewCoinbaseTX(to, data string) *Transaction {
-//	if data == "" {
-//		randData := make([]byte,20)
-//		_, err := rand.Read(randData)
-//		if err != nil {
-//			log.Panic(err)
-//		}
-//		data = fmt.Sprintf("%x", randData)
-//	}
-//	//initial coinbase trans, - empty txid, no value ie -1 and data is just string
-//	txin := TXInput{[]byte{}, -1, nil, []byte(data)}
-//	txout := NewTXOutput(subsidy, to) //subsidy is the amount of reward, scriptkey is to address
-//	tx := Transaction{nil, []TXInput{txin}, []TXOutput{*txout}}
-//	tx.ID = tx.Hash()
-//	return &tx
-//}
-
 //GenesisCoinBaseTX gives a much bigger reward to the person who creates the blockchain
 func GenesisCoinBaseTX(to, data string) *Transaction {
 	if data == "" {
@@ -136,29 +119,12 @@ func (tx *Transaction) SetID() {
 	tx.ID = hash[:]
 }
 
-// CanUnlockOutputWith checks whether the address initiated the transaction
-//func (in *TXInput) CanUnlockOutputWith(unlockingData string) bool {
-//	return in.ScriptSig == unlockingData
-//}
-//
-//// CanBeUnlockedWith checks if the output can be unlocked with the provided data
-//func (out *TXOutput) CanBeUnlockedWith(unlockingData string) bool {
-//	return out.ScriptPubKey == unlockingData
-//}
-
 // NewUTXOTransaction creates a new transaction
-func NewUTXOTransaction(from, to string, amount int, UTXOSet *UTXOSet) *Transaction {
+func NewUTXOTransaction(wallet *Wallet, to string, amount int, UTXOSet *UTXOSet) *Transaction {
 
 	var inputs []TXInput
 	var outputs []TXOutput
 
-	wallets, err := NewWallets()
-
-	if err != nil {
-		log.Panic(err)
-	}
-
-	wallet := wallets.GetWallet(from)
 	pubKeyHash := HashPubKey(wallet.PublicKey)
 	acc, validOutputs := UTXOSet.FindSpendableOutputs(pubKeyHash, amount)
 
@@ -181,6 +147,7 @@ func NewUTXOTransaction(from, to string, amount int, UTXOSet *UTXOSet) *Transact
 	}
 
 	//build a list of outputs
+	from := fmt.Sprintf("%s", wallet.GetAddress())
 	outputs = append(outputs, *NewTXOutput(amount, to))
 	if acc > amount {
 		outputs = append(outputs, *NewTXOutput(acc-amount, from)) // a change
@@ -204,17 +171,21 @@ func (tx *Transaction) Sign(privKey ecdsa.PrivateKey, prevTXs map[string]Transac
 		prevTX := prevTXs[hex.EncodeToString(vin.Txid)]
 		txCopy.Vin[inID].Signature = nil
 		txCopy.Vin[inID].PubKey = prevTX.Vout[vin.Vout].PubKeyHash
-		txCopy.ID = txCopy.Hash() //The Hash method serializes the transaction and hashes it with the SHA-256 algorithm
-		txCopy.Vin[inID].PubKey = nil
+		//txCopy.ID = txCopy.Hash() //The Hash method serializes the transaction and hashes it with the SHA-256 algorithm
+		//txCopy.Vin[inID].PubKey = nil
 
 		//We sign txCopy.ID with privKey. An ECDSA signature is a pair of numbers,
 		//which we concatenate and store in the input’s Signature field.
-		r, s, err := ecdsa.Sign(rand.Reader, &privKey, txCopy.ID)
+		//r, s, err := ecdsa.Sign(rand.Reader, &privKey, txCopy.ID)
+		dataToSign := fmt.Sprintf("%x\n", txCopy)
+		r, s, err := ecdsa.Sign(rand.Reader, &privKey, []byte(dataToSign))
+
 		if err != nil {
 			log.Panic(err)
 		}
 		signature := append(r.Bytes(), s.Bytes()...)
 		tx.Vin[inID].Signature = signature
+		txCopy.Vin[inID].PubKey = nil
 	}
 }
 
@@ -246,8 +217,8 @@ func (tx *Transaction) Verify(prevTXs map[string]Transaction) bool {
 		prevTx := prevTXs[hex.EncodeToString(vin.Txid)]
 		txCopy.Vin[inID].Signature = nil
 		txCopy.Vin[inID].PubKey = prevTx.Vout[vin.Vout].PubKeyHash
-		txCopy.ID = txCopy.Hash()
-		txCopy.Vin[inID].PubKey = nil
+		//txCopy.ID = txCopy.Hash()
+		//txCopy.Vin[inID].PubKey = nil
 
 		r := big.Int{}
 		s := big.Int{}
@@ -261,11 +232,26 @@ func (tx *Transaction) Verify(prevTXs map[string]Transaction) bool {
 		x.SetBytes(vin.PubKey[:(keyLen / 2)])
 		y.SetBytes(vin.PubKey[(keyLen / 2):])
 
+		dataToVerify := fmt.Sprintf("%x\n", txCopy)
+
 		rawPubKey := ecdsa.PublicKey{curve, &x, &y}
-		if ecdsa.Verify(&rawPubKey, txCopy.ID, &r, &s) == false {
+		if ecdsa.Verify(&rawPubKey, []byte(dataToVerify), &r, &s) == false {
 			return false
 		}
 	}
 
 	return true
+}
+
+// DeserializeTransaction deserializes a transaction
+func DeserializeTransaction(data []byte) Transaction {
+	var transaction Transaction
+
+	decoder := gob.NewDecoder(bytes.NewReader(data))
+	err := decoder.Decode(&transaction)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	return transaction
 }
