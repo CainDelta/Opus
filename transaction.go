@@ -66,7 +66,7 @@ func (tx Transaction) String() string {
 
 	for i, output := range tx.Vout {
 		lines = append(lines, fmt.Sprintf("     Output %d:", i))
-		lines = append(lines, fmt.Sprintf("       Value:  %d", output.Value))
+		lines = append(lines, fmt.Sprintf("       Value:  %f", output.Value))
 		lines = append(lines, fmt.Sprintf("       Script: %x", output.PubKeyHash))
 	}
 
@@ -120,7 +120,7 @@ func (tx *Transaction) SetID() {
 }
 
 // NewUTXOTransaction creates a new transaction
-func NewUTXOTransaction(wallet *Wallet, to string, amount int, UTXOSet *UTXOSet) *Transaction {
+func NewUTXOTransaction(wallet *Wallet, to string, amount float32, UTXOSet *UTXOSet) *Transaction {
 
 	var inputs []TXInput
 	var outputs []TXOutput
@@ -137,7 +137,8 @@ func NewUTXOTransaction(wallet *Wallet, to string, amount int, UTXOSet *UTXOSet)
 	for txid, outs := range validOutputs {
 		txID, err := hex.DecodeString(txid)
 		if err != nil {
-			log.Panic(err)
+			//log.Panic(err)
+			log.Fatal("Failed building inputs")
 		}
 
 		for _, out := range outs {

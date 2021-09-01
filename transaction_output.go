@@ -8,7 +8,7 @@ import (
 
 //outputs were coins stored
 type TXOutput struct {
-	Value      int
+	Value      float32
 	PubKeyHash []byte //determines how to unlock output
 }
 
@@ -26,7 +26,7 @@ func (out *TXOutput) IsLockedwithKey(pubKeyHash []byte) bool {
 }
 
 //NewTXOutput creates a new TXOutput
-func NewTXOutput(value int, address string) *TXOutput {
+func NewTXOutput(value float32, address string) *TXOutput {
 	txo := &TXOutput{value, nil}
 	txo.Lock([]byte(address))
 	return txo
@@ -58,6 +58,7 @@ func DeserializeOutputs(data []byte) TXOutputs {
 	err := dec.Decode(&outputs)
 	if err != nil {
 		log.Panic(err)
+		//log.Fatal("Failed Deserializing")
 	}
 
 	return outputs

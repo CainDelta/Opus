@@ -375,10 +375,10 @@ func (i *BlockchainIterator) Next() *Block {
 }
 
 // FindSpendableOutputs finds and returns unspent outputs to reference in inputs
-func (bc *Blockchain) FindSpendableOutputs(address []byte, amount int) (int, map[string][]int) {
+func (bc *Blockchain) FindSpendableOutputs(address []byte, amount float32) (float32, map[string][]int) {
 	unspentOutputs := make(map[string][]int)
 	unspentTXs := bc.FindUnspentTransactions(address)
-	accumulated := 0
+	accumulated := float32(0.0)
 
 Work:
 	for _, tx := range unspentTXs {

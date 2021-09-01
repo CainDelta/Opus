@@ -48,7 +48,7 @@ func (cli *CLI) getBalance(address, nodeID string) {
 	UTXOSet := UTXOSet{bc}
 	defer bc.db.Close()
 
-	balance := 0
+	balance := float32(0.0)
 	pubKeyHash := Base58Decode([]byte(address))
 	pubKeyHash = pubKeyHash[1 : len(pubKeyHash)-4]
 	UTXOs := UTXOSet.FindUTXO(pubKeyHash)
@@ -57,11 +57,11 @@ func (cli *CLI) getBalance(address, nodeID string) {
 		balance += out.Value
 	}
 
-	fmt.Printf("Balance of '%s': %d\n", address, balance)
+	fmt.Printf("Balance of '%s': %f\n", address, balance)
 
 }
 
-func (cli *CLI) send(from, to string, amount int, nodeID string, mineNow bool) {
+func (cli *CLI) send(from, to string, amount float32, nodeID string, mineNow bool) {
 
 	if !ValidateAddress(from) {
 		log.Panic("ERROR: Sender address is not valid")
@@ -167,7 +167,7 @@ func (cli *CLI) Run() {
 	cli.validateArgs()
 
 	nodeID := os.Getenv("NODE_ID")
-	fmt.Printf(nodeID)
+
 	if nodeID == "" {
 		fmt.Printf("NODE_ID env. var is not set !")
 		os.Exit(1)
@@ -186,7 +186,7 @@ func (cli *CLI) Run() {
 	createBlockchainAddress := createBlockchainCmd.String("address", "", "The address to send genesis block reward to")
 	sendFrom := sendCmd.String("from", "", "Source wallet address")
 	sendTo := sendCmd.String("to", "", "Destination wallet address")
-	sendAmount := sendCmd.Int("amount", 0, "Amount to send")
+	sendAmount := sendCmd.Float64("amount", 0.0, "Amount to send")
 	sendMine := sendCmd.Bool("mine", false, "Mine immediately on the same node")
 	startNodeMiner := startNodeCmd.String("miner", "", "Enable mining mode and send reward to ADDRESS")
 
@@ -274,7 +274,7 @@ func (cli *CLI) Run() {
 			os.Exit(1)
 		}
 
-		cli.send(*sendFrom, *sendTo, *sendAmount, nodeID, *sendMine)
+		cli.send(*sendFrom, *sendTo, float32(*sendAmount), nodeID, *sendMine)
 	}
 	if startNodeCmd.Parsed() {
 		nodeID := os.Getenv("NODE_ID")

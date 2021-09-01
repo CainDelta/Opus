@@ -53,9 +53,9 @@ func (u UTXOSet) Reindex() {
 }
 
 // FindSpendableOutputs finds and returns unspent outputs to reference in inputs
-func (u UTXOSet) FindSpendableOutputs(pubkeyHash []byte, amount int) (int, map[string][]int) {
+func (u UTXOSet) FindSpendableOutputs(pubkeyHash []byte, amount float32) (float32, map[string][]int) {
 	unspentOutputs := make(map[string][]int)
-	accumulated := 0
+	accumulated := float32(0)
 	db := u.Blockchain.db
 
 	err := db.View(func(tx *bolt.Tx) error {
@@ -76,7 +76,8 @@ func (u UTXOSet) FindSpendableOutputs(pubkeyHash []byte, amount int) (int, map[s
 		return nil
 	})
 	if err != nil {
-		log.Panic(err)
+		//log.Panic(err)
+		log.Fatal("failed at FindSpendableOutputs")
 	}
 
 	return accumulated, unspentOutputs
