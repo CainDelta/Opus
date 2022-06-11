@@ -8,7 +8,7 @@ Create Blockchain from scratch with a simple PoW mechanism which can then be imp
 ##### Second Stage - Python 
 Mainly data processing, pull the blockchain into python and flatten to get a dataframe that will ultimately trace everything back to the genesis block hopefully 
 
-### Third Stage - Neo4j 
+##### Third Stage - Neo4j 
 
 Import blockchain data via python and build a graph then the fun begins 
 
